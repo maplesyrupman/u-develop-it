@@ -1,4 +1,5 @@
 const express = require('express')
+const mysql = require('mysql2')
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -6,7 +7,39 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'max',
+        password: 'maxPassword',
+        database: 'election'
+    },
+    console.log('Connected to the election database.')
+)
 
+// db.query(`SELECT * FROM candidates`, (err, rows) => {
+//     if (err) console.log(err)
+//     console.log(rows)
+// })
+
+// db.query(`SELECT * FROM candidates WHERE id = 1`, (err, results) => {
+//     if (err) console.log(err);
+//     console.log(results)
+// }) 
+
+// db.query(`DELETE FROM candidates WHERE id = ?`, 11, (err, results) => {
+//     if (err) console.log(err);
+//     console.log(results)
+// })
+
+// const sql = `INSERT INTO candidates (id, first_name, last_name, industry_connected)
+//              Values (?,?,?,?)`;
+// const params = [1, 'Ronald', 'Firbank', 1];
+
+// db.query(sql, params, (err, result) => {
+//     if (err) console.log(err)
+//     console.log(result)
+// })
 
 app.use((req, res) => {
     res.status(404).end();
