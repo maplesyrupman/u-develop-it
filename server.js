@@ -80,7 +80,6 @@ app.delete('/api/candidates/:id', (req, res) => {
     })
 })
 
-
 app.post('/api/candidates', ({body}, res) => {
     const errors = inputCheck(body, 'first_name', 'last_name', 'industry_connected');
     if (errors) {
@@ -105,6 +104,31 @@ app.post('/api/candidates', ({body}, res) => {
     })
 })
 
+app.put('/api/candidates/:id', (req, res) => {
+    const errors = inputCheck(req.body, 'party_id');
+
+    if (errors) {
+        res.status(400).json({ error: errors })
+    }
+
+    const sql = `UPDATE candidates SET party_id = ? WHERE id = ?`;
+    const params = [req.body.party_id, req.params.id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message })
+        } else if (!result.affectedRows) {
+            res.json({ message: 'Candidate not found' })
+        } else {
+            res.status(200).json({
+                message: 'success',
+                data: req.body,
+                changes: result.affectedRows
+            })
+        }
+    })
+})
+
 app.get('/api/parties', (req, res) => {
     const sql = `SELECT * FROM parties;`
 
@@ -121,9 +145,8 @@ app.get('/api/parties', (req, res) => {
 })
 
 app.get('/api/parties/:id', (req, res) => {
-    const sql = `SELECT * FROM parties
-                 WHERE id = ?`
-    const params = [req.body.id];
+    const sql = `SELECT * FROM parties WHERE id = ?;`
+    const params = [req.params.id];
 
     db.query(sql, params, (err, row) => {
         if (err) {
@@ -138,7 +161,7 @@ app.get('/api/parties/:id', (req, res) => {
 
 app.delete('/api/parties/:id', (req, res) => {
     const sql = `DELETE FROM parties WHERE id = ?`;
-    const params = [req.body.id];
+    const params = [req.params.id];
 
     db.query(sql, params, (err, result) => {
         if (err) {
@@ -154,8 +177,6 @@ app.delete('/api/parties/:id', (req, res) => {
         }
     })
 })
-
-
 
 app.use((req, res) => {
     res.status(404).end();
